@@ -27,7 +27,7 @@ import { cn } from "@/lib/utils";
 import { Input } from "../ui/input";
 import { type Category } from "@/types/Category";
 
-const transactionFormSchema = z.object({
+export const transactionFormSchema = z.object({
   transactionType: z.enum(["income", "expense"]),
   categoryId: z.coerce.number().positive("Please select a category"),
   transactionDate: z.coerce
@@ -40,7 +40,12 @@ const transactionFormSchema = z.object({
     .max(300, "Description must contain a maximum of 300 characters"),
 });
 
-function TransactionForm({ categories }: { categories: Array<Category> }) {
+type TransactionFormProps = {
+  categories: Array<Category>;
+  onSubmit: (data: z.infer<typeof transactionFormSchema>) => Promise<void>;
+};
+
+function TransactionForm({ categories, onSubmit }: TransactionFormProps) {
   const form = useForm<z.infer<typeof transactionFormSchema>>({
     resolver: zodResolver(transactionFormSchema),
     defaultValues: {
@@ -52,18 +57,16 @@ function TransactionForm({ categories }: { categories: Array<Category> }) {
     },
   });
 
-  const handleSubmit = async (data: z.infer<typeof transactionFormSchema>) => {
-    // Submit the form data to your backend API
-    console.log("Transaction submitted:", data);
-  };
-
   const filteredCategories = categories.filter(
     (category) => category.type === form.getValues("transactionType")
   );
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)}>
-        <fieldset className="grid grid-cols-2 gap-y-5 gap-x-2">
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <fieldset
+          disabled={form.formState.isSubmitting}
+          className="grid grid-cols-2 gap-y-5 gap-x-2"
+        >
           <FormField
             control={form.control}
             name="transactionType"
@@ -184,7 +187,10 @@ function TransactionForm({ categories }: { categories: Array<Category> }) {
             }}
           />
         </fieldset>
-        <fieldset className="mt-5 flex flex-col gap-5">
+        <fieldset
+          disabled={form.formState.isSubmitting}
+          className="mt-5 flex flex-col gap-5"
+        >
           <FormField
             control={form.control}
             name="description"

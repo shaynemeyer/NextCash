@@ -1,4 +1,5 @@
-import TransactionForm from "@/components/Transaction/TransactionForm";
+import NewTransactionForm from "@/components/Transaction/NewTransactionForm";
+
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -40,7 +41,7 @@ async function NewTransactionPage() {
         <CardHeader>
           <CardTitle>New Transaction</CardTitle>
           <CardContent>
-            <TransactionForm categories={categories} />
+            <NewTransactionForm categories={categories} />
           </CardContent>
         </CardHeader>
       </Card>
