@@ -25,6 +25,7 @@ import { CalendarIcon } from "lucide-react";
 import { Calendar } from "../ui/calendar";
 import { cn } from "@/lib/utils";
 import { Input } from "../ui/input";
+import { type Category } from "@/types/Category";
 
 const transactionFormSchema = z.object({
   transactionType: z.enum(["income", "expense"]),
@@ -32,14 +33,14 @@ const transactionFormSchema = z.object({
   transactionDate: z.coerce
     .date()
     .max(addDays(new Date(), 1), "Transaction data cannot be in the future"),
-  amount: z.number().positive("Amount must be greater than zero"),
+  amount: z.coerce.number().positive("Amount must be greater than zero"),
   description: z
     .string()
     .min(3, "Description must contain at least 3 characters")
     .max(300, "Description must contain a maximum of 300 characters"),
 });
 
-function TransactionForm() {
+function TransactionForm({ categories }: { categories: Array<Category> }) {
   const form = useForm<z.infer<typeof transactionFormSchema>>({
     resolver: zodResolver(transactionFormSchema),
     defaultValues: {
@@ -55,6 +56,10 @@ function TransactionForm() {
     // Submit the form data to your backend API
     console.log("Transaction submitted:", data);
   };
+
+  const filteredCategories = categories.filter(
+    (category) => category.type === form.getValues("transactionType")
+  );
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)}>
@@ -67,7 +72,13 @@ function TransactionForm() {
                 <FormItem>
                   <FormLabel>Transaction Type</FormLabel>
                   <FormControl>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select
+                      onValueChange={(newValue) => {
+                        field.onChange(newValue);
+                        form.setValue("categoryId", 0);
+                      }}
+                      value={field.value}
+                    >
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
@@ -97,7 +108,16 @@ function TransactionForm() {
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent></SelectContent>
+                      <SelectContent>
+                        {filteredCategories.map((category) => (
+                          <SelectItem
+                            key={category.id}
+                            value={category.id.toString()}
+                          >
+                            {category.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
                     </Select>
                   </FormControl>
                   <FormMessage />
