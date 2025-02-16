@@ -1,3 +1,4 @@
+import TransactionForm from "@/components/Transaction/TransactionForm";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -34,7 +35,9 @@ function NewTransactionPage() {
       <Card className="mt-4 max-w-screen-md">
         <CardHeader>
           <CardTitle>New Transaction</CardTitle>
-          <CardContent>new transaction form</CardContent>
+          <CardContent>
+            <TransactionForm />
+          </CardContent>
         </CardHeader>
       </Card>
     </div>
