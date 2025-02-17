@@ -1,10 +1,10 @@
-import Link from "next/link";
+import RecentTransactions from "@/components/Transaction/RecentTransactions";
 
 function DashboardPage() {
   return (
-    <div>
-      <h1 className="text-2xl">DashboardPage</h1>
-      <Link href="/dashboard/transactions/new">New Transactions</Link>
+    <div className="max-w-screen-xl mx-auto py-5">
+      <h1 className="text-4xl font-semibold pb-5">Dashboard</h1>
+      <RecentTransactions />
     </div>
   );
 }
