@@ -40,7 +40,7 @@ async function NewTransactionPage() {
       <Card className="mt-4 max-w-screen-md">
         <CardHeader>
           <CardTitle>New Transaction</CardTitle>
-          <CardContent>
+          <CardContent className="ml-[-1.5rem]">
             <NewTransactionForm categories={categories} />
           </CardContent>
         </CardHeader>
