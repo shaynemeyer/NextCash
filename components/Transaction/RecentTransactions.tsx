@@ -17,7 +17,6 @@ import { format } from "date-fns";
 async function RecentTransactions() {
   const recentTransactions = await getRecentTransactions();
 
-  console.log({ recentTransactions });
   return (
     <Card>
       <CardHeader>
