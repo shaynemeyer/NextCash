@@ -36,7 +36,8 @@ async function RecentTransactions() {
       <CardContent>
         {!recentTransactions?.length && (
           <p className="text-center py-10 text-lg text-muted-foreground">
-            There are no recent transactions
+            You have no transactions yet. Start by hitting &quot;Create
+            New&quot; to create your first transaction.
           </p>
         )}
         {!!recentTransactions?.length && (
