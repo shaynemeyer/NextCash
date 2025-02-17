@@ -2,22 +2,16 @@
 
 import { db } from "@/db";
 import { transactionsTable } from "@/db/schema";
+import { transactionSchema } from "@/validation/transactionSchema";
 import { auth } from "@clerk/nextjs/server";
-import { addDays, subYears } from "date-fns";
+import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
-const transactionSchema = z.object({
-  amount: z.number().positive("Amount must be greater than 0"),
-  description: z
-    .string()
-    .min(3, "Description must contain at least 3 characters")
-    .max(300, "Description must contain a maximum of 300 characters"),
-  categoryId: z.number().positive("Category ID is invalid"),
-  transactionDate: z.coerce
-    .date()
-    .min(subYears(new Date(), 100))
-    .max(addDays(new Date(), 1)),
-});
+const updateTransactionSchema = transactionSchema.and(
+  z.object({
+    id: z.number(),
+  })
+);
 
 export const createTransaction = async (data: {
   amount: number;
@@ -58,3 +52,44 @@ export const createTransaction = async (data: {
     id: transaction.id,
   };
 };
+
+export async function updateTransaction(data: {
+  id: number;
+  amount: number;
+  description: string;
+  categoryId: number;
+  transactionDate: string;
+}) {
+  const { userId } = await auth();
+
+  if (!userId) {
+    return {
+      error: true,
+      message: "Unauthorized",
+    };
+  }
+
+  const validation = updateTransactionSchema.safeParse(data);
+
+  if (!validation.success) {
+    return {
+      error: true,
+      message: validation.error.issues[0].message,
+    };
+  }
+
+  await db
+    .update(transactionsTable)
+    .set({
+      description: data.description,
+      amount: data.amount.toString(),
+      transactionDate: data.transactionDate,
+      categoryId: data.categoryId,
+    })
+    .where(
+      and(
+        eq(transactionsTable.id, data.id),
+        eq(transactionsTable.userId, userId)
+      )
+    );
+}
