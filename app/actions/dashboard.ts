@@ -46,11 +46,11 @@ export async function getAnnualCachflow(year: number) {
   for (let i = 1; i <= 12; i++) {
     const monthlyCashflow = cashflow.find((cf) => Number(cf.month) === i);
     annualCashflow.push({
-      month: i,
+      month: Number(i),
       income: Number(monthlyCashflow?.totalIncome ?? 0),
       expenses: Number(monthlyCashflow?.totalExpense ?? 0),
     });
   }
 
-  return cashflow;
+  return annualCashflow;
 }
